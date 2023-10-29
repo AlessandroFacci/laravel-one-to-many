@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
+use App\Models\Type;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
@@ -33,7 +34,8 @@ class ProjectController extends Controller
     public function create()
     {
         $title = 'Create a new project';
-        return view('admin.projects.create', compact('title'));
+        $types = Type::all();
+        return view('admin.projects.create', compact('title','types'));
     }
 
     /**
@@ -42,14 +44,19 @@ class ProjectController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * * @return \Illuminate\Http\Response
      */
-    public function store(StoreProjectRequest $request, Project  $project)
+    public function store(StoreProjectRequest $request)
     {
         $data = $request->validated();
+        
         $project = new Project();
-        $project->title = $data['title'];
-        $project->repo = $data['repo'];
+
+        // $project->title = $data['title'];
+        // $project->repo = $data['repo'];
+        // $project->description = $data['description'];
+        
+        $project->fill($data);  
+
         $project->slug  = Str::slug($project->title);
-        $project->description = $data['description'];
         $project->save();
 
         return redirect()->route('admin.projects.show', $project);
@@ -75,8 +82,9 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         $title = 'Edit project';
+        $types = Type::all();
         // $project = Project::findOrFail($id);
-        return view('admin.projects.edit', compact('title', 'project'));
+        return view('admin.projects.edit', compact('title', 'project', 'types'));
     }
 
     /**

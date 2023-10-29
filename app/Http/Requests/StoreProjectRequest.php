@@ -25,6 +25,7 @@ class StoreProjectRequest extends FormRequest
     {
         return [
             'title' => ['required','string','unique:projects'],
+            'type_id' => ['nullable','exists:types,id'],
             'repo' => ['required','string', 'url'],
             'description' => ['required','string'],
         ];
